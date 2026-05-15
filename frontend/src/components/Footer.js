@@ -11,10 +11,10 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <Recycle className="h-8 w-8 text-primary-400" />
-              <span className="font-bold text-xl">E-Waste Loop</span>
+              <span className="font-bold text-xl">E-Waste </span>
             </div>
             <p className="text-gray-300 mb-4 max-w-md">
-              Closing the loop on e-waste through traceable, QR-powered responsible recycling. 
+              Closing the loop on e-waste through traceable, QR-powered responsible recycling.
               Join us in creating a sustainable future for electronic waste management.
             </p>
             <div className="flex space-x-4">
@@ -59,8 +59,8 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-400">
-            © 2024 E-Waste Loop. All rights reserved. | 
-            <Link to="/privacy" className="hover:text-primary-400 ml-1">Privacy Policy</Link> | 
+            © 2026 E-Waste . All rights reserved. |
+            <Link to="/privacy" className="hover:text-primary-400 ml-1">Privacy Policy</Link> |
             <Link to="/terms" className="hover:text-primary-400 ml-1">Terms of Service</Link>
           </p>
         </div>

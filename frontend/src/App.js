@@ -78,6 +78,7 @@ const AppContent = () => {
             <Route path="/user/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
             <Route path="/user/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/user/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/user/marketplace" element={<ProtectedRoute><UserMarketplace /></ProtectedRoute>} />
             
             {/* Company Routes */}

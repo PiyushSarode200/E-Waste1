@@ -116,6 +116,10 @@ class ApiService {
     return this.request('/public-partners');
   }
 
+  async getPublicBlogStats() {
+    return this.request('/public-blog-stats');
+  }
+
   async getCompanyStats() {
     return this.request('/company-stats');
   }

@@ -8,6 +8,18 @@ const Blog = () => {
   const [featuredPost, setFeaturedPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All Posts');
+  const [blogStats, setBlogStats] = useState({
+    articlesPublished: 0,
+    topicsCovered: 0,
+    monthlyReaders: 0
+  });
+
+  useEffect(() => {
+    // Fetch stats on mount
+    api.getPublicBlogStats()
+      .then(data => setBlogStats(data))
+      .catch(err => console.error('Error fetching blog stats:', err));
+  }, []);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -36,9 +48,9 @@ const Blog = () => {
   ];
 
   const stats = [
-    { icon: Leaf, label: 'Articles Published', value: '150+' },
-    { icon: Recycle, label: 'Topics Covered', value: '25+' },
-    { icon: TrendingUp, label: 'Monthly Readers', value: '50K+' },
+    { icon: Leaf, label: 'Articles Published', value: blogStats.articlesPublished },
+    { icon: Recycle, label: 'Topics Covered', value: blogStats.topicsCovered },
+    { icon: TrendingUp, label: 'Monthly Readers', value: blogStats.monthlyReaders },
   ];
 
   return (

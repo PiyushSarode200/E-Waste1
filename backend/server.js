@@ -967,23 +967,36 @@ app.get('/api/public-impact', async (req, res) => {
 // Community impact — CO2 by device type, materials recovered
 app.get('/api/impact', async (req, res) => {
   try {
-    const CO2_BY_TYPE = { Smartphone: 2, Tablet: 3, Laptop: 5, TV: 8 };
-    const MATERIALS_BY_TYPE = { Smartphone: 0.1, Tablet: 0.15, Laptop: 0.3, TV: 0.5 };
+    const MATERIALS_BY_TYPE = { Smartphone: 0.1, Tablet: 0.15, Laptop: 0.3, TV: 0.5, Others: 0.1 };
+    
+    // Normalize and Map Device Type
+    const mapType = (type) => {
+      if (!type) return "Others";
+      const t = type.toLowerCase();
+      if (t.includes("smart") || t.includes("phone")) return "Smartphone";
+      if (t.includes("laptop") || t.includes("mac") || t.includes("pc")) return "Laptop";
+      if (t.includes("tablet") || t.includes("ipad")) return "Tablet";
+      if (t.includes("tv") || t.includes("television") || t.includes("monitor")) return "TV";
+      return "Others";
+    };
 
     const devices = await Device.find({}, 'deviceType');
     const totalUsers = await User.countDocuments();
+    const users = await User.find({}, 'totalCO2Saved');
 
-    let totalCO2 = 0;
+    // Real CO2 saved from User documents (matches impact dashboard)
+    const realCO2 = users.reduce((sum, u) => sum + (u.totalCO2Saved || 0), 0);
+
     let totalMaterials = 0;
     devices.forEach(d => {
-      totalCO2 += CO2_BY_TYPE[d.deviceType] || 1;
-      totalMaterials += MATERIALS_BY_TYPE[d.deviceType] || 0.1;
+      const normalizedType = mapType(d.deviceType);
+      totalMaterials += MATERIALS_BY_TYPE[normalizedType] || 0.1;
     });
 
     res.json({
       totalDevices: devices.length,
       totalUsers,
-      totalCO2: parseFloat(totalCO2.toFixed(1)),
+      totalCO2: parseFloat(realCO2.toFixed(1)),
       totalMaterials: parseFloat(totalMaterials.toFixed(2)),
     });
   } catch (error) {

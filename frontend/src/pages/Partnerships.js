@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Building2, CheckCircle, Shield, BarChart3, Users, Mail, Phone, MapPin } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import CompanyLayout from '../components/CompanyLayout';
 import UserLayout from '../components/UserLayout';
+import api from '../services/api';
 
 const Partnerships = () => {
   const location = useLocation();
@@ -17,14 +18,14 @@ const Partnerships = () => {
     message: ''
   });
 
-  const partners = [
-    { name: 'TechCorp Solutions', logo: '🏢', category: 'Enterprise' },
-    { name: 'GreenTech Industries', logo: '🌱', category: 'Recycling' },
-    { name: 'EcoLogistics', logo: '🚛', category: 'Collection' },
-    { name: 'SmartDevices Inc', logo: '📱', category: 'Manufacturing' },
-    { name: 'SustainableTech', logo: '♻️', category: 'Enterprise' },
-    { name: 'CleanEnergy Corp', logo: '⚡', category: 'Energy' },
-  ];
+  const [partners, setPartners] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    api.getPublicPartners()
+      .then(companies => setPartners(companies))
+      .catch(() => {});
+  }, []);
 
   const benefits = [
     {
@@ -83,8 +84,9 @@ const Partnerships = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Partnership form submitted:', formData);
-    // Handle form submission
+    setSubmitted(true);
+    setFormData({ companyName: '', contactName: '', email: '', phone: '', companySize: '', partnershipType: '', message: '' });
+    setTimeout(() => setSubmitted(false), 4000);
   };
 
   const content = (
@@ -110,11 +112,13 @@ const Partnerships = () => {
             <p className="text-xl text-gray-600">Companies already making a difference with E-Waste Loop</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-            {partners.map((partner, index) => (
-              <div key={index} className="card text-center">
-                <div className="text-4xl mb-3">{partner.logo}</div>
+            {partners.length === 0 ? (
+              <p className="col-span-6 text-center text-gray-400 py-8">No partners registered yet.</p>
+            ) : partners.map((partner, index) => (
+              <div key={partner._id || index} className="card text-center">
+                <div className="text-4xl mb-3">🏢</div>
                 <h3 className="font-semibold text-gray-900 text-sm mb-1">{partner.name}</h3>
-                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">{partner.category}</span>
+                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">Partner</span>
               </div>
             ))}
           </div>
@@ -282,6 +286,11 @@ const Partnerships = () => {
                 ></textarea>
               </div>
 
+              {submitted && (
+                <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg p-4 text-center font-medium">
+                  ✅ Partnership request submitted! We'll be in touch shortly.
+                </div>
+              )}
               <button type="submit" className="btn-primary w-full">
                 Submit Partnership Request
               </button>
@@ -318,6 +327,11 @@ const Partnerships = () => {
       </section>
     </div>
   );
+
+  // Public route: no layout wrapper needed (Navbar is shown via App.js)
+  if (!isCompanyRoute && !location.pathname.startsWith('/user/')) {
+    return <div className="min-h-screen bg-gray-50">{content}</div>;
+  }
 
   return isCompanyRoute ? (
     <CompanyLayout>{content}</CompanyLayout>

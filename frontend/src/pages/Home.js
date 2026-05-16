@@ -1,13 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, QrCode, Award, Recycle, Leaf, Users, TrendingUp, MapPin, Smartphone, ShoppingCart } from 'lucide-react';
+import api from '../services/api';
 
 const Home = () => {
+  const [impactData, setImpactData] = useState({
+    devicesRecycled: 0,
+    totalCO2Saved: 0,
+    activeUsers: 0,
+    partnerCompanies: 0
+  });
+
+  useEffect(() => {
+    api.getPublicImpact()
+      .then(data => setImpactData(data))
+      .catch(() => {});
+  }, []);
+
   const stats = [
-    { label: 'Devices Recycled', value: '50,000+', icon: Recycle },
-    { label: 'CO₂ Saved (tons)', value: '1,250', icon: Leaf },
-    { label: 'Active Users', value: '25,000+', icon: Users },
-    { label: 'Partner Companies', value: '150+', icon: TrendingUp },
+    { label: 'Devices Recycled', value: impactData.devicesRecycled.toLocaleString(), icon: Recycle },
+    { label: 'CO₂ Saved (kg)', value: impactData.totalCO2Saved.toLocaleString(), icon: Leaf },
+    { label: 'Active Users', value: impactData.activeUsers.toLocaleString(), icon: Users },
+    { label: 'Partner Companies', value: impactData.partnerCompanies.toLocaleString(), icon: TrendingUp },
   ];
 
   const steps = [

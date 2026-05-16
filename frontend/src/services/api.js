@@ -112,6 +112,10 @@ class ApiService {
     return this.request('/public-impact');
   }
 
+  async getPublicPartners() {
+    return this.request('/public-partners');
+  }
+
   async getCompanyStats() {
     return this.request('/company-stats');
   }

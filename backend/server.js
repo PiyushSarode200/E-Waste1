@@ -16,12 +16,15 @@ const upload = multer({ dest: 'uploads/' });
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true
+}));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://EWaste:EWaste%40123@ewaste.blzsmw4.mongodb.net/', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://EWaste:EWaste%40123@ewaste.blzsmw4.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -185,6 +188,64 @@ const Feature = mongoose.model('Feature', featureSchema);
 const MarketplaceItem = mongoose.model('MarketplaceItem', marketplaceItemSchema);
 const Order = mongoose.model('Order', orderSchema);
 const Report = mongoose.model('Report', reportSchema);
+
+// ============================================================
+// PUBLIC ENDPOINTS (no auth required)
+// ============================================================
+
+// Public impact stats for Home page
+app.get('/api/public-impact', async (req, res) => {
+  try {
+    const weightMap = { Smartphone: 0.2, Tablet: 0.5, Laptop: 2.0, TV: 8.0, Others: 1.0 };
+    const mapType = (type) => {
+      if (!type) return 'Others';
+      const t = type.toLowerCase();
+      if (t.includes('smart') || t.includes('phone')) return 'Smartphone';
+      if (t.includes('laptop') || t.includes('mac') || t.includes('pc')) return 'Laptop';
+      if (t.includes('tablet') || t.includes('ipad')) return 'Tablet';
+      if (t.includes('tv') || t.includes('television') || t.includes('monitor')) return 'TV';
+      return 'Others';
+    };
+
+    const [allDevices, allUsers, allCompanies] = await Promise.all([
+      Device.find({}),
+      User.countDocuments({}),
+      Company.countDocuments({})
+    ]);
+
+    let totalWeight = 0;
+    let totalCO2Saved = 0;
+    allDevices.forEach(d => {
+      const w = weightMap[mapType(d.deviceType)] || 1.0;
+      totalWeight += w;
+      totalCO2Saved += d.totalCO2Saved || 0;
+    });
+
+    // Aggregate user totalCO2Saved from User collection
+    const users = await User.find({}, 'totalCO2Saved');
+    const realCO2 = users.reduce((sum, u) => sum + (u.totalCO2Saved || 0), 0);
+
+    res.json({
+      devicesRecycled: allDevices.length,
+      totalWeightKg: Math.round(totalWeight * 10) / 10,
+      totalCO2Saved: realCO2,
+      activeUsers: allUsers,
+      partnerCompanies: allCompanies
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Public list of partner companies for Partnerships page
+app.get('/api/public-partners', async (req, res) => {
+  try {
+    const companies = await Company.find({}, 'name description createdAt').sort({ createdAt: -1 });
+    res.json(companies);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
 
 // User Register endpoint
 app.post('/api/user/register', async (req, res) => {

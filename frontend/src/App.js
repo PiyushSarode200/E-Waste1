@@ -40,7 +40,7 @@ const AppContent = () => {
   const userType = user.userType;
   
   const isAuthPage = ['/login', '/user/login', '/company/login', '/signup', '/user/signup', '/company/signup'].includes(location.pathname);
-  const isPublicPage = ['/', '/about', '/how-it-works'].includes(location.pathname);
+  const isPublicPage = ['/', '/about', '/how-it-works', '/partnerships'].includes(location.pathname);
   const isUserRoute = location.pathname.startsWith('/user/');
   const isCompanyRoute = location.pathname.startsWith('/company/');
   
@@ -55,6 +55,7 @@ const AppContent = () => {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route path="/partnerships" element={<Partnerships />} />
             <Route path="/signup" element={<SignupChoice />} />
             <Route path="/user/signup" element={<UserSignup />} />
             <Route path="/company/signup" element={<CompanySignup />} />

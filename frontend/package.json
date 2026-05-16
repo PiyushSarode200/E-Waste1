@@ -2,7 +2,6 @@
   "name": "e-waste-loop",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://PiyushSarode200.github.io/E-Waste",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
@@ -18,7 +17,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
